@@ -188,8 +188,8 @@ public:
 		srand(time(NULL));
 		
 		exit = false;
-		upA = 'e'; upB = 'u';
-		dA = 'd'; dB = 'j';
+		upA = 'e'; upB = 'u';		// User A
+		dA = 'd'; dB = 'j';			// User B
 		height = h; width = w;
 		orb = new Orb(w / 2, h / 2);
 		userA = new Blade(1, h / 2 - 3);
