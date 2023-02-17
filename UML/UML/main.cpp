@@ -23,7 +23,6 @@ class Orb
 {
 
 private:
-
 	int x, y;
 	int OX, OY;
 	edir direction;
@@ -40,34 +39,59 @@ public:
 
 	void reboot()
 	{
+		/// <summary>
+		/// Restart
+		/// </summary>
 		x = OX; y = OY;
 		direction = STOP;
 	}
 
 	void changedir(edir d)
 	{
+		/// <summary>
+		/// Change dirrection
+		/// </summary>
+		/// <param name="d"></param>
 		direction = d;
 	}
 
 	void randir()
 	{
+		/// <summary>
+		/// Random dirrection
+		/// </summary>
 		direction = (edir)((rand() % 5) + 1);
 	}
 
 	inline int getX() {
+		/// <summary>
+		/// Get X position
+		/// </summary>
+		/// <returns></returns>
 		return x;
 	}
 
 	inline int getY() {
+		/// <summary>
+		/// Get Y position
+		/// </summary>
+		/// <returns></returns>
 		return y;
 	}
 
 	inline edir getdir() {
+		/// <summary>
+		/// Get dirrection
+		/// </summary>
+		/// <returns></returns>
 		return direction;
 	}
 
 	void Move()
 	{
+		/// <summary>
+		/// Move Orb
+		/// </summary>
 		switch (direction)
 		{
 		case STOP:
@@ -135,22 +159,39 @@ public:
 	}
 
 	inline void reboot() {
+		/// <summary>
+		/// Restart
+		/// </summary>
 		x = OX; y = OY;
 	}
 
 	inline int getX() {
+		/// <summary>
+		/// Get X position
+		/// </summary>
+		/// <returns></returns>
 		return x;
 	}
 
 	inline int getY() {
+		/// <summary>
+		/// Get Y position
+		/// </summary>
+		/// <returns></returns>
 		return y;
 	}
 
 	inline void up() {
+		/// <summary>
+		/// Move Blade UP
+		/// </summary>
 		y--;
 	}
 
 	inline void down() {
+		/// <summary>
+		/// Move Blade DOWN
+		/// </summary>
 		y++;
 	}
 
@@ -167,7 +208,9 @@ class GameController
 
 private:
 
-	//board parametrs
+	/// <summary>
+	/// Board parametrs
+	/// </summary>
 	int height, width;
 	int resultA, resultB;
 	bool exit;
@@ -185,6 +228,10 @@ public:
 
 	GameController(int w, int h)
 	{
+		/// <summary>
+		/// Here u can change presskeys and board color
+		/// </summary>
+		
 		srand(time(NULL));
 
 		exit = false;
@@ -197,6 +244,8 @@ public:
 		resultA = resultB = 0;
 
 		system("color 8E"); //Gray + Light Yellow
+		
+		
 
 		//0 = Black       
 		//1 = Blue       
@@ -214,6 +263,9 @@ public:
 
 	void Run()
 	{
+		/// <summary>
+		/// Run Game
+		/// </summary>
 		while (!exit)
 		{
 			Input();
@@ -224,7 +276,10 @@ public:
 
 	void Input()
 	{
-		//game mehanics
+		/// <summary>
+		/// Game Mehanics
+		/// </summary>
+		
 		orb->Move();
 
 
