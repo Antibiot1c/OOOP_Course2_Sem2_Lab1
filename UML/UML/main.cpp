@@ -9,7 +9,7 @@ using namespace std;
 using std::chrono::steady_clock;
 
 
-
+// A variable of type eDirection
 enum edir {
 	STOP = 0,
 	LEFT = 1,
@@ -20,7 +20,7 @@ enum edir {
 	DRIGHT = 6
 };
 
-
+// 3 main classes 
 class Orb
 
 {
@@ -211,9 +211,6 @@ class GameController
 
 private:
 
-	/// <summary>
-	/// Board parametrs
-	/// </summary>
 	int height, width;
 	int resultA, resultB;
 	bool exit;
@@ -266,9 +263,6 @@ public:
 
 	void Run()
 	{
-		/// <summary>
-		/// Run Game
-		/// </summary>
 		while (!exit)
 		{
 			Input();
@@ -380,6 +374,8 @@ public:
 			cout << "\xB2";
 		cout << endl;
 
+		// Give result to Users
+
 		cout << "result team A: " << resultA << endl << "result team B: " << resultB << endl;
 	}
 
@@ -439,7 +435,7 @@ public:
 	}
 };
 
-
+// Work with Time
 class Timer
 {
 /// <summary>
@@ -499,7 +495,7 @@ bool Timer::start(const std::chrono::milliseconds& ms) {
 	}
 }
 
-
+// start game
 int main()
 {
 	GameController c(50, 25); // game board size
