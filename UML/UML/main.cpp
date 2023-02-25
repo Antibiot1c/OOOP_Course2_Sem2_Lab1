@@ -5,6 +5,7 @@
 #include <chrono>
 #include <mutex>
 #include <future>
+#include <functional>
 using namespace std;
 using std::chrono::steady_clock;
 
@@ -436,64 +437,79 @@ public:
 };
 
 // Work with Time
-class Timer
-{
-/// <summary>
-/// Just timer
-/// </summary>
+class Timer {
+public:
+	template<typename TimeUnit>
+	Timer() : _isRunning(false), _completed(false), _cancelled(false) {};
+
+	template<typename TimeUnit>
+	bool start(const TimeUnit& duration, const std::function<void()>& callback) {
+		if (isRunning()) {
+			return false;
+		}
+		else {
+			_ftr = std::async(std::launch::async, [this, duration, callback]() {
+				delay(duration);
+				if (!_cancelled && callback) {
+					callback();
+				}
+				_completed = true;
+				});
+			_isRunning = true;
+			return true;
+		}
+	}
+
+	void stop() {
+		if (isRunning()) {
+			_cancelled = true;
+			if (_ftr.valid()) {
+				_ftr.wait_for(std::chrono::milliseconds(0));
+				
+			}
+			_isRunning = false;
+		}
+	}
+
+	bool isRunning() const {
+		std::lock_guard<std::mutex> lck();
+		return _isRunning;
+	}
+
+	bool isCompleted() const {
+		std::lock_guard<std::mutex> lck();
+		return _completed;
+	}
 
 private:
-	std::mutex mtx;
-	std::future<void> _ftr;
+	template<typename TimeUnit>
+	void delay(const TimeUnit& duration) {
+		std::unique_lock<std::mutex> lck(_mtx);
+		_completed = false;
+		_cancelled = false;
+		lck.unlock();
 
+		auto cv_timeout = std::chrono::steady_clock::now() + duration;
+
+		std::unique_lock<std::mutex> ul(_cv_mtx);
+		_cv.wait_until(ul, cv_timeout, [this]() {
+			return _cancelled || _completed;
+			});
+
+		if (!_cancelled) {
+			_completed = true;
+		}
+		_isRunning = false;
+	}
+
+	std::mutex _mtx;
+	std::condition_variable _cv;
+	std::mutex _cv_mtx;
+	std::future<void> _ftr;
 	bool _isRunning;
 	bool _completed;
-	void delay(const std::chrono::milliseconds& ms);
-
-public:
-	Timer() : _isRunning(false), _completed(false) {};
-
-	bool isRunning();
-	bool isCompleted();
-	bool start(const std::chrono::milliseconds& ms);
-
+	bool _cancelled;
 };
-
-void Timer::delay(const std::chrono::milliseconds& ms) {
-	std::unique_lock<std::mutex> lck(mtx);
-	_completed = false;
-
-	_isRunning = true;
-
-	lck.unlock();
-	auto time_started = steady_clock::now();
-
-	std::this_thread::sleep_for(ms);
-
-	lck.lock();
-	_isRunning = false;
-	_completed = true;
-}
-
-bool Timer::isRunning() {
-	std::unique_lock<std::mutex> lck(mtx);
-	return _isRunning;
-}
-
-bool Timer::isCompleted() {
-	std::unique_lock<std::mutex> lck(mtx);
-	return _completed;
-}
-
-bool Timer::start(const std::chrono::milliseconds& ms) {
-	if (isRunning()) {
-		return false;
-	}
-	else {
-		_ftr = std::async(&Timer::delay, this, ms);
-		return true;
-	}
-}
 
 // start game
 int main()
